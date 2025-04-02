@@ -86,6 +86,37 @@ def subvector_suma_maxima_fuerza_bruta_with_index(vector: list) -> tuple:
     
     return max_suma, (start_index, end_index)
 
+def subvector_suma_maxima_profesor(vector: list) -> int:
+    """Devuelve la suma máxima de un subvector contiguo del vector dado.
+
+    Aproximación por fuerza bruta.
+
+    Args:
+        vector (list): Vector de números enteros (positivos y negativos).
+
+    Returns:
+        int: Suma máxima de un subvector contiguo.
+
+    Complexity:
+        O(n^2)
+    """
+    max_sum = float('-inf')
+    n = len(vector)
+    # Opción 1
+    for i in range(n):
+        acum = 0
+        for j in range(i, n):
+            acum += vector[j]
+            max_sum = max(max_sum, acum)
+            
+    # Opción 2
+    for i in range(n):
+        for j in range(i, n):
+            suma = sum(vector[i : j + 1])
+            max_sum = max(max_sum, suma)
+
+    return max_sum 
+
 def subvector_suma_maxima_divide_y_venceras(vector: list) -> int:
     """Devuelve la suma máxima de un subvector contiguo del vector dado.
     
@@ -256,10 +287,5 @@ def compare_times(func1: callable, func2: callable, vector: list):
     print(f"Tiempo de ejecución de {func2.__name__}: {time_func2:.6f} segundos")
 
 if __name__ == "__main__":
-    # Test de las funciones
     vector = [random.randint(-100, 100) for _ in range(10000)]
-    print("Suma máxima (Fuerza Bruta):", subvector_suma_maxima_fuerza_bruta(vector))
-    print("Suma máxima (Divide y Vencerás):", subvector_suma_maxima_divide_y_venceras(vector))
-
-    # Comparar tiempos
     compare_times(subvector_suma_maxima_fuerza_bruta, subvector_suma_maxima_divide_y_venceras, vector)
