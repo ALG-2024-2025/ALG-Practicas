@@ -1,8 +1,12 @@
+
+# ALG-Practicas
+
 > [!Important]
 > Los `imports` de los test han sido modificados por mí para poder ejecutarlos según la estructura del proyecto.
 > Todos los tests han sido hechos por el profesorado de la UBU y, actualmente, mantenidos por [José Luis Garrido](https://www.linkedin.com/in/joseluisgarrido/)
 
-# ALG-Practicas
+>[!Important]
+> Instalar los requisitos necesarios desde el fichero `requirements.txt`.
 
 Prácticas de la asignatura Algoritmia en la UBU 2024/2025. Desde S1 a S7.
 
@@ -31,13 +35,19 @@ Aquí están resueltos todos los ejercicios de las prácticas de Algoritmia.
 
 Para ejecutar los tests, Tienes dos opciones:
 
-1. Ejecutar el siguiente comando en la terminal:
+1. Instalar los requisitos necesarios desde el fichero `requirements.txt`.
+
+```bash
+pip install -r requirements.txt
+```
+
+2. Ejecutar el siguiente comando en la terminal:
 
 ```bash
 python -m unittest discover -s .\tst\
 ```
 
-2. Con VS Code, puedes ir al apartado de `Testing` y ejecutar los tests desde ahí.
+3. Con VS Code, puedes ir al apartado de `Testing` y ejecutar los tests desde ahí.
 
 ![alt text](assets/image.png)
 
