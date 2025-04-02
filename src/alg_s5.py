@@ -394,4 +394,5 @@ def comparar_tiempos(num_nodos_lista: list = [10, 50, 100, 500, 1000], repeticio
         print(f"{num_nodos:<10}{tiempo_kruskal_promedio:<15.2f}{tiempo_prim_promedio:<15.2f}")
 
 # Para ejecutar la comparación de tiempos, descomentar la siguiente línea:
-comparar_tiempos()
+if __name__ == "__main__":
+    comparar_tiempos()

@@ -30,9 +30,6 @@ Aquí están resueltos todos los ejercicios de las prácticas de Algoritmia.
 
 ## Cómo ejecutar los tests
 
-> [!Note]
-> La ejecución de los tests puede tardar unos 20seg.
-
 Para ejecutar los tests, Tienes dos opciones:
 
 1. Instalar los requisitos necesarios desde el fichero `requirements.txt`.
