@@ -42,16 +42,17 @@ def subvector_suma_maxima_fuerza_bruta(vector: list) -> int:
     n = len(vector)
     if n == 0:
         return 0
-    
+
     max_suma = vector[0]
-    
+
     for i in range(n):
         suma_actual = 0
         for j in range(i, n):
             suma_actual += vector[j]
             max_suma = max(max_suma, suma_actual)
-    
+
     return max_suma
+
 
 def subvector_suma_maxima_fuerza_bruta_with_index(vector: list) -> tuple:
     """Devuelve la suma máxima de un subvector contiguo del vector dado.
@@ -70,11 +71,11 @@ def subvector_suma_maxima_fuerza_bruta_with_index(vector: list) -> tuple:
     n = len(vector)
     if n == 0:
         return 0, (-1, -1)
-    
+
     max_suma = vector[0]
     start_index = 0
     end_index = 0
-    
+
     for i in range(n):
         suma_actual = 0
         for j in range(i, n):
@@ -83,8 +84,10 @@ def subvector_suma_maxima_fuerza_bruta_with_index(vector: list) -> tuple:
                 max_suma = suma_actual
                 start_index = i
                 end_index = j
-    
-    return max_suma, (start_index, end_index)
+
+    # Es necesario sumar 1 al índice final para incluirlo en el rango
+    return max_suma, (start_index, end_index + 1)
+
 
 def subvector_suma_maxima_profesor(vector: list) -> int:
     """Devuelve la suma máxima de un subvector contiguo del vector dado.
@@ -100,7 +103,7 @@ def subvector_suma_maxima_profesor(vector: list) -> int:
     Complexity:
         O(n^2)
     """
-    max_sum = float('-inf')
+    max_sum = float("-inf")
     n = len(vector)
     # Opción 1
     for i in range(n):
@@ -108,18 +111,19 @@ def subvector_suma_maxima_profesor(vector: list) -> int:
         for j in range(i, n):
             acum += vector[j]
             max_sum = max(max_sum, acum)
-            
+
     # Opción 2
     for i in range(n):
         for j in range(i, n):
             suma = sum(vector[i : j + 1])
             max_sum = max(max_sum, suma)
 
-    return max_sum 
+    return max_sum
+
 
 def subvector_suma_maxima_divide_y_venceras(vector: list) -> int:
     """Devuelve la suma máxima de un subvector contiguo del vector dado.
-    
+
     Aproximación Divide y Vencerás.
 
     Args:
@@ -131,6 +135,7 @@ def subvector_suma_maxima_divide_y_venceras(vector: list) -> int:
     Complexity:
         O(n log n)
     """
+
     def max_crossing_subarray(arr: list, low: int, mid: int, high: int) -> int:
         """Devuelve la suma máxima de un subvector que pasa por el medio.
 
@@ -143,13 +148,13 @@ def subvector_suma_maxima_divide_y_venceras(vector: list) -> int:
         Returns:
             int: Suma máxima de un subvector que pasa por el medio.
         """
-        left_sum = float('-inf')
+        left_sum = float("-inf")
         curr_sum = 0
         for i in range(mid, low - 1, -1):
             curr_sum += arr[i]
             left_sum = max(left_sum, curr_sum)
 
-        right_sum = float('-inf')
+        right_sum = float("-inf")
         curr_sum = 0
         for i in range(mid + 1, high + 1):
             curr_sum += arr[i]
@@ -184,6 +189,7 @@ def subvector_suma_maxima_divide_y_venceras(vector: list) -> int:
 
     return max_subarray(vector, 0, len(vector) - 1)
 
+
 def subvector_suma_maxima_divide_y_venceras_with_index(vector: list) -> tuple:
     """Devuelve la suma máxima de un subvector contiguo del vector dado.
 
@@ -198,6 +204,7 @@ def subvector_suma_maxima_divide_y_venceras_with_index(vector: list) -> tuple:
     Complexity:
         O(n log n)
     """
+
     def max_crossing_subarray(arr: list, low: int, mid: int, high: int) -> tuple:
         """Devuelve la suma máxima de un subvector que pasa por el medio.
 
@@ -210,7 +217,7 @@ def subvector_suma_maxima_divide_y_venceras_with_index(vector: list) -> tuple:
         Returns:
             tuple: Suma máxima de un subvector que pasa por el medio y los índices del subvector.
         """
-        left_sum = float('-inf')
+        left_sum = float("-inf")
         curr_sum = 0
         start_index = mid
         for i in range(mid, low - 1, -1):
@@ -219,7 +226,7 @@ def subvector_suma_maxima_divide_y_venceras_with_index(vector: list) -> tuple:
                 left_sum = curr_sum
                 start_index = i
 
-        right_sum = float('-inf')
+        right_sum = float("-inf")
         curr_sum = 0
         end_index = mid + 1
         for i in range(mid + 1, high + 1):
@@ -256,20 +263,61 @@ def subvector_suma_maxima_divide_y_venceras_with_index(vector: list) -> tuple:
             return right_sum, right_indices
 
         return cross_sum, cross_indices
-        
+
     if len(vector) == 0:
         return 0, (-1, -1)
-    
+
     return max_subarray(vector, 0, len(vector) - 1)
+
+
+def subvector_suma_maxima_divide_y_venceras_profesor(vector: list) -> int:
+    """Devuelve la suma máxima de un subvector contiguo del vector dado.
+
+    Aproximación Divide y Vencerás.
+
+    Args:
+        vector (list): Vector de números enteros (positivos y negativos).
+
+    Returns:
+        int: Suma máxima de un subvector contiguo.
+
+    Complexity:
+        O(n log n)
+    """
+
+    if len(vector) == 0:
+        return 0
+    if len(vector) == 1:
+        return vector[0]
+
+    izqa, dcha = vector[: len(vector) // 2], vector[len(vector) // 2 :]
+    mazIzq = float("-inf")
+    acum = 0
+    for e in reversed(izqa):
+        acum += e
+        mazIzq = max(mazIzq, acum)
+    mazDch = float("-inf")
+    acum = 0
+    for e in dcha:
+        acum += e
+        mazDch = max(mazDch, acum)
+
+    return max(
+        subvector_suma_maxima_divide_y_venceras_profesor(izqa),
+        subvector_suma_maxima_divide_y_venceras_profesor(dcha),
+        mazIzq + mazDch,
+    )
+
 
 # Sugerencia: analiza el tiempo de ejecución de cada una de las funciones anteriores.
 
 # Sugerencia: crea una versión de estos algoritmos que además devuelva los índices del subvector de suma máxima.
 
+
 def compare_times(func1: callable, func2: callable, vector: list):
     """
     Compara los tiempos de ejecución de dos funciones que resuelven el mismo problema.
-    
+
     Args:
         func1 (callable): Primera función a comparar.
         func2 (callable): Segunda función a comparar.
@@ -286,6 +334,11 @@ def compare_times(func1: callable, func2: callable, vector: list):
     print(f"Tiempo de ejecución de {func1.__name__}: {time_func1:.6f} segundos")
     print(f"Tiempo de ejecución de {func2.__name__}: {time_func2:.6f} segundos")
 
+
 if __name__ == "__main__":
     vector = [random.randint(-100, 100) for _ in range(10000)]
-    compare_times(subvector_suma_maxima_fuerza_bruta, subvector_suma_maxima_divide_y_venceras, vector)
+    compare_times(
+        subvector_suma_maxima_fuerza_bruta,
+        subvector_suma_maxima_divide_y_venceras,
+        vector,
+    )
