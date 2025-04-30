@@ -12,11 +12,12 @@
 # Importaciones
 from math import log
 from collections import deque
+from typing import Callable, Generator
 
 
 def generador_recurrencia(
-    coeficientes: list, funcion_adicional: callable, iniciales: list
-) -> callable:
+    coeficientes: list, funcion_adicional: Callable, iniciales: list
+) -> Callable:
     """Generador de valores de acuerdo a una recurrencia:
     F(n) = coeficientes[0]*F(n-1) + coeficientes[1]*F(n-2) + ...
          + funcion_adicional(n)
@@ -54,12 +55,12 @@ def generador_recurrencia(
             ventana.append(valor)
             indice += 1
 
-    return generador()
+    return generador
 
 
 def generador_recurrencia_profesor(
-    coeficientes: list, funcion_adicional: callable, iniciales: list
-) -> callable:
+    coeficientes: list, funcion_adicional: Callable, iniciales: list
+) -> Callable:
     """Generador de valores de acuerdo a una recurrencia:
     F(n) = coeficientes[0]*F(n-1) + coeficientes[1]*F(n-2) + ...
          + funcion_adicional(n)
@@ -77,24 +78,29 @@ def generador_recurrencia_profesor(
     Returns:
         callable: Generador de valores de la recurrencia.
     """
-    yield from iniciales
-    coeficientes = coeficientes[::-1]
-    lista_recurrencia = deque(iniciales)
-    indice = len(iniciales)
-    while True:
-        valor_adicional = funcion_adicional(indice)
-        indice += 1
 
-        valor = (
-            sum(
-                coeficientes[i] * lista_recurrencia[i] for i in range(len(coeficientes))
+    def generador():
+        yield from iniciales
+        coeficientes_rev = coeficientes[::-1]
+        lista_recurrencia = deque(iniciales)
+        indice = len(iniciales)
+        while True:
+            valor_adicional = funcion_adicional(indice)
+            indice += 1
+
+            valor = (
+                sum(
+                    coeficientes_rev[i] * lista_recurrencia[i]
+                    for i in range(len(coeficientes_rev))
+                )
+                + valor_adicional
             )
-            + valor_adicional
-        )
-        yield valor
+            yield valor
 
-        lista_recurrencia.append(valor)
-        lista_recurrencia.popleft()
+            lista_recurrencia.append(valor)
+            lista_recurrencia.popleft()
+
+    return generador
 
 
 class RecurrenciaMaestra:
@@ -155,35 +161,30 @@ class RecurrenciaMaestra:
 
         return f"O(n^{self.k})"
 
-    def __iter__(self) -> callable:
+    def __iter__(self) -> "Generator[int, None, None]":
         """Generador de valores de la recurrencia: T(0), T(1), T(2), T(3)...,
         indefinidamente.
         Se calcula iterativamente apoyándose en los valores previamente calculados.
 
         Returns:
-            callable: Generador de valores de la recurrencia.
+            Generator[int, None, None]: Un generador que devuelve valores de la recurrencia.
         """
+        values = [self.inicial]
+        yield self.inicial
+        n = 1
+        while True:
+            next_val = self.a * values[n // self.b] + n**self.k
+            values.append(next_val)
+            yield next_val
+            n += 1
 
-        def generador():
-            """Generador de valores de la recurrencia."""
-            values = [self.inicial]
-            yield self.inicial
-            n = 1
-            while True:
-                next_val = self.a * values[n // self.b] + n**self.k
-                values.append(next_val)
-                yield next_val
-                n += 1
-
-        return generador()
-
-    def __iter__Profesor(self) -> callable:
+    def __iter__Profesor(self) -> "Generator[int, None, None]":
         """Generador de valores de la recurrencia: T(0), T(1), T(2), T(3)...,
         indefinidamente.
         Se calcula iterativamente apoyándose en los valores previamente calculados.
 
         Returns:
-            callable: Generador de valores de la recurrencia.
+            Generator[int, None, None]: Generador de valores de la recurrencia.
         """
         lista_recurrencia = deque([self.inicial])
         indice = 1
@@ -199,6 +200,8 @@ class RecurrenciaMaestra:
 
     def __eq__(self, x: object) -> bool:
         """Operador de igualdad."""
+        if not isinstance(x, RecurrenciaMaestra):
+            return False
         return (
             self.a == x.a
             and self.b == x.b
