@@ -14,9 +14,10 @@
 # NOTA: Los grafos son dirigidos y pesados.
 
 import heapq
+from typing import Optional
 
 
-grafo_de_ejemplo: dict[str, int] = {
+grafo_de_ejemplo: dict[str, dict[str, int]] = {
     "a": {"b": 1, "c": 2},
     "b": {"a": 3, "d": 6},
     "c": {"a": 5, "b": 2},
@@ -69,6 +70,7 @@ def peso_total(grafo: dict) -> int:
             total += grafo[nodo][destino]
     return total
 
+
 def peso_total_profesor(grafo: dict) -> int:
     """Suma de los pesos de los arcos del grafo.
 
@@ -84,7 +86,7 @@ def peso_total_profesor(grafo: dict) -> int:
     return adj
 
 
-def arco(grafo: dict, origen: str, destino: str) -> int:
+def arco(grafo: dict, origen: str, destino: str) -> Optional[int]:
     """Si hay un arco de origen a destino, devuelve su peso.
     Si no hay, devuelve None.
 
@@ -94,7 +96,7 @@ def arco(grafo: dict, origen: str, destino: str) -> int:
         destino (str): Destino del arco
 
     Returns:
-        int: Peso del arco
+        Optional[int]: Peso del arco o None si no existe
     """
     if origen in grafo and destino in grafo[origen]:
         return grafo[origen][destino]
@@ -120,6 +122,7 @@ def inserta_nodo(grafo: dict, nodo: str) -> dict:
     """
     grafo.setdefault(nodo, {})
     return grafo
+
 
 def inserta_nodo_profesor(grafo: dict, nodo: str) -> dict:
     """Inserta el nodo en el grafo.
@@ -209,7 +212,7 @@ def pesos_adyacentes(grafo: dict, nodo: str, salida: bool = True) -> int:
     # return sum(grafo[origen][nodo] for origen in grafo.values()
 
 
-def coste_camino(grafo: dict, camino: list[str]) -> int:
+def coste_camino(grafo: dict, camino: list[str]) -> Optional[int]:
     """Devuelve el coste del camino en el grafo.
     El camino viene dado como una secuencia de nodos.
     Si esa secuencia no forma un camino, devuelve None.
@@ -234,7 +237,8 @@ def coste_camino(grafo: dict, camino: list[str]) -> int:
         coste += peso
     return coste
 
-def coste_camino_profesor(grafo: dict, camino: list[str]) -> int:
+
+def coste_camino_profesor(grafo: dict, camino: list[str]) -> Optional[int]:
     """Devuelve el coste del camino en el grafo.
     El camino viene dado como una secuencia de nodos.
     Si esa secuencia no forma un camino, devuelve None.
@@ -258,7 +262,7 @@ def coste_camino_profesor(grafo: dict, camino: list[str]) -> int:
 # Habiendo creado las funciones anteriores, se pide implementar los siguientes métodos:
 
 
-def prim(grafo: dict, inicial: str = None) -> dict:
+def prim(grafo: dict, inicial: Optional[str] = None) -> dict:
     """Implementa el algoritmo de Prim para obtener el árbol de expansión mínima de un grafo usando colas de prioridad.
     Devuelve en el formato del grafo el árbol.
 
@@ -272,7 +276,7 @@ def prim(grafo: dict, inicial: str = None) -> dict:
 
     Returns:
         dict: Árbol de expansión mínima
-    
+
     Complexity:
         O(n log n)
     """
@@ -306,7 +310,8 @@ def prim(grafo: dict, inicial: str = None) -> dict:
 
     return arbol
 
-def prim_profesor(grafo: dict, inicial: str = None) -> dict:
+
+def prim_profesor(grafo: dict, inicial: Optional[str] = None) -> dict:
     """Implementa el algoritmo de Prim para obtener el árbol de expansión mínima de un grafo. Devuelve en el formato del grafo el árbol.
 
     Se recuerda que un árbol es un grafo sin bucles y conectado.
@@ -326,21 +331,24 @@ def prim_profesor(grafo: dict, inicial: str = None) -> dict:
 
     arbol = {x: dict() for x in grafo.keys()}
     vistos = set()
-    candidatos = {x: (None, float("inf")) for x in grafo.keys()}
+    candidatos: dict[str, tuple[Optional[str], float]] = {
+        x: (None, float("inf")) for x in grafo.keys()
+    }
     vistos.add(inicial)
 
     while len(vistos) < len(grafo):
         for adyacente, peso in grafo[inicial].items():
             if adyacente not in vistos and peso < candidatos[adyacente][1]:
-                candidatos[adyacente] = (inicial, peso)
+                candidatos[adyacente] = (inicial, float(peso))
 
         mejor = min(candidatos, key=lambda x: candidatos[x][1])
-        arbol[mejor[0]][[mejor[1][0]]] = mejor[1][1]
-        arbol[mejor[1][0]][mejor[0]] = mejor[1][1]
-        nodo = mejor[0]
+        arbol[mejor][candidatos[mejor][0]] = candidatos[mejor][1]
+        arbol[candidatos[mejor][0]][mejor] = candidatos[mejor][1]
+        nodo = mejor
         vistos.add(nodo)
         candidatos.pop(nodo)
 
+    return arbol
 
 
 def dijkstra(grafo: dict, inicial: str) -> dict:
@@ -358,8 +366,8 @@ def dijkstra(grafo: dict, inicial: str) -> dict:
         O(n^2)
     """
     # Inicializar distancias y predecesores
-    distancias = {nodo: (None, float("inf")) for nodo in grafo}
-    distancias[inicial] = (None, 0)
+    distancias = {nodo: [None, float("inf")] for nodo in grafo}
+    distancias[inicial] = [None, 0]
 
     # Conjunto de nodos no visitados
     no_visitados = set(grafo.keys())
@@ -380,9 +388,10 @@ def dijkstra(grafo: dict, inicial: str) -> dict:
             nueva_distancia = distancias[nodo_actual][1] + peso
 
             if nueva_distancia < distancias[vecino][1]:
-                distancias[vecino] = (nodo_actual, nueva_distancia)
+                distancias[vecino] = [nodo_actual, nueva_distancia]
 
     return distancias
+
 
 def dijkstra_profesor(grafo: dict, inicial: str) -> dict:
     """Implementa el algoritmo de Dijkstra
@@ -396,8 +405,10 @@ def dijkstra_profesor(grafo: dict, inicial: str) -> dict:
         dict: Distancias mínimas
     """
     # Inicializar distancias y predecesores
-    distancias = {nodo: ( float("inf")) for nodo in grafo.keys()}
-    padre = {x: None for x in grafo.keys()}
+    distancias: dict[str, tuple[Optional[str], float]] = {
+        nodo: (None, float("inf")) for nodo in grafo.keys()
+    }
+    padre: dict[str, Optional[str]] = {x: None for x in grafo.keys()}
     visto = set()
 
     distancias[inicial] = (None, 0)
@@ -422,7 +433,7 @@ def dijkstra_profesor(grafo: dict, inicial: str) -> dict:
 
 def obten_camino_minimo(
     inicial: str, final: str, caminos_pre_calculados: dict
-) -> list[str]:
+) -> Optional[list[str]]:
     """Devuelve el camino mínimo entre dos nodos, a partir de la información obtenida con Dijkstra.
     Si no hay camino, devuelve None.
 
@@ -437,7 +448,7 @@ def obten_camino_minimo(
 
     Returns:
         list[str]: Camino mínimo
-    
+
     Complexity:
         O(n log n)
     """
