@@ -27,6 +27,32 @@ def es_subsecuencia(subsecuencia: str, cadena: str) -> bool:
     return sub_pos == len(subsecuencia)
 
 
+def es_subsecuencia_profesor(subsecuencia: str, cadena: str) -> bool:
+    """Indica si el primer argumento es subsecuencia del segundo.
+
+    Args:
+        subsecuencia (str): Subsecuencia a comprobar.
+        cadena (str): Cadena a comprobar.
+
+    Returns:
+        bool: True si subsecuencia es subsecuencia de cadena, False en caso contrario.
+
+    Complexity:
+        O(n)
+    """
+    iter1 = iter(subsecuencia)
+    iter2 = iter(cadena)
+
+    for c in iter2:
+        try:
+            c1 = next(iter1)
+        except StopIteration:
+            return True
+        if c != c1:
+            continue
+    return False
+
+
 def subsecuencia_comun_mas_larga(x: str, y: str) -> str:
     """Dadas dos cadenas x e y devuelve una que es subsecuencia de ambas y que
     tiene la longitud máxima de todas las subsecuencias comunes.
@@ -105,7 +131,14 @@ def subsecuencias_comunes_mas_largas(x: str, y: str) -> set:
     all_lcs = set()
 
     # Función recursiva para construir todas las LCS
-    def generate_lcs(row, col, lcs=""):
+    def generate_lcs(row: int, col: int, lcs: str = ""):
+        """Genera todas las subsecuencias comunes más largas (LCS) de x e y.
+
+        Args:
+            row (int): Fila actual en la matriz dp.
+            col (int): Columna de la matriz dp.
+            lcs (str, optional): Subsecuencia común actual. Defaults to "".
+        """
         if row == 0 or col == 0:
             # Si llegamos al final, agregamos la LCS al conjunto
             if len(lcs) == max_length:
@@ -124,6 +157,52 @@ def subsecuencias_comunes_mas_largas(x: str, y: str) -> set:
 
     generate_lcs(len_x, len_y)
     return all_lcs
+
+
+def subsecuencias_comunes_mas_largas_profesor(x: str, y: str) -> set:
+    """Dadas dos cadenas x e y devuelve un conjunto con todas las subsecuencias de
+    ambas que tienen longitud máxima.
+
+    Args:
+        x (str): Cadena x.
+        y (str): Cadena y.
+
+    Returns:
+        set: Conjunto con todas las subsecuencias comunes más largas de x e y.
+
+    Complexity:
+        O(m*n)
+    """
+    len_x, len_y = len(x), len(y)
+
+    # Matriz para almacenar las longitudes de las LCS
+    dp = [[0] * (len_y + 1) for _ in range(len_x + 1)]
+
+    # Llenar la matriz
+    for row in range(1, len_x + 1):
+        for col in range(1, len_y + 1):
+            if x[row - 1] == y[col - 1]:
+                dp[row][col] = dp[row - 1][col - 1] + 1
+            else:
+                dp[row][col] = max(dp[row - 1][col], dp[row][col - 1])
+
+    # Función recursiva para construir todas las LCS
+    def subsecuencia_comun_mas_larga(row: int, col: int) -> set:
+        if row == 0 or col == 0:
+            return {""}
+        if x[row - 1] == y[col - 1]:
+            return {
+                s + x[row - 1] for s in subsecuencia_comun_mas_larga(row - 1, col - 1)
+            }
+        if dp[row - 1][col] > dp[row][col - 1]:
+            return subsecuencia_comun_mas_larga(row - 1, col)
+        if dp[row][col - 1] > dp[row - 1][col]:
+            return subsecuencia_comun_mas_larga(row, col - 1)
+        return subsecuencia_comun_mas_larga(
+            row - 1, col
+        ) | subsecuencia_comun_mas_larga(row, col - 1)
+
+    return subsecuencia_comun_mas_larga(len_x, len_y)
 
 
 # Mochila 1-0
