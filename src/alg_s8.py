@@ -23,6 +23,7 @@
 
 import random
 import time
+from typing import Callable
 
 
 def subvector_suma_maxima_fuerza_bruta(vector: list) -> int:
@@ -89,7 +90,7 @@ def subvector_suma_maxima_fuerza_bruta_with_index(vector: list) -> tuple:
     return max_suma, (start_index, end_index + 1)
 
 
-def subvector_suma_maxima_profesor(vector: list) -> int:
+def subvector_suma_maxima_profesor(vector: list) -> float:
     """Devuelve la suma máxima de un subvector contiguo del vector dado.
 
     Aproximación por fuerza bruta.
@@ -98,7 +99,7 @@ def subvector_suma_maxima_profesor(vector: list) -> int:
         vector (list): Vector de números enteros (positivos y negativos).
 
     Returns:
-        int: Suma máxima de un subvector contiguo.
+        float: Suma máxima de un subvector contiguo.
 
     Complexity:
         O(n^2)
@@ -136,7 +137,7 @@ def subvector_suma_maxima_divide_y_venceras(vector: list) -> int:
         O(n log n)
     """
 
-    def max_crossing_subarray(arr: list, low: int, mid: int, high: int) -> int:
+    def max_crossing_subarray(arr: list, low: int, mid: int, high: int) -> float:
         """Devuelve la suma máxima de un subvector que pasa por el medio.
 
         Args:
@@ -146,7 +147,7 @@ def subvector_suma_maxima_divide_y_venceras(vector: list) -> int:
             high (int): Índice alto del subvector.
 
         Returns:
-            int: Suma máxima de un subvector que pasa por el medio.
+            float: Suma máxima de un subvector que pasa por el medio.
         """
         left_sum = float("-inf")
         curr_sum = 0
@@ -182,7 +183,7 @@ def subvector_suma_maxima_divide_y_venceras(vector: list) -> int:
         right_sum = max_subarray(arr, mid + 1, high)
         cross_sum = max_crossing_subarray(arr, low, mid, high)
 
-        return max(left_sum, right_sum, cross_sum)
+        return int(max(left_sum, right_sum, cross_sum))
 
     if len(vector) == 0:
         return 0
@@ -302,10 +303,12 @@ def subvector_suma_maxima_divide_y_venceras_profesor(vector: list) -> int:
         acum += e
         mazDch = max(mazDch, acum)
 
-    return max(
-        subvector_suma_maxima_divide_y_venceras_profesor(izqa),
-        subvector_suma_maxima_divide_y_venceras_profesor(dcha),
-        mazIzq + mazDch,
+    return int(
+        max(
+            subvector_suma_maxima_divide_y_venceras_profesor(izqa),
+            subvector_suma_maxima_divide_y_venceras_profesor(dcha),
+            mazIzq + mazDch,
+        )
     )
 
 
@@ -313,8 +316,7 @@ def subvector_suma_maxima_divide_y_venceras_profesor(vector: list) -> int:
 
 # Sugerencia: crea una versión de estos algoritmos que además devuelva los índices del subvector de suma máxima.
 
-
-def compare_times(func1: callable, func2: callable, vector: list):
+def compare_times(func1: Callable, func2: Callable, vector: list):
     """
     Compara los tiempos de ejecución de dos funciones que resuelven el mismo problema.
 
