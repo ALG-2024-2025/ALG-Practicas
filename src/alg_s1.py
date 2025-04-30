@@ -16,6 +16,7 @@
 from itertools import repeat
 import collections
 from collections.abc import Iterable
+from typing import Optional
 
 # ### Iterador con sustitución
 
@@ -205,7 +206,7 @@ def iterador_incluido_profesor(itera_1: Iterable, itera_2: Iterable) -> bool:
 # - F(n) = F(n-1) + ... + F(n-k+1)
 
 
-def fibonacci_generalizado(k: int, iniciales: Iterable = None) -> Iterable:
+def fibonacci_generalizado(k: int, iniciales: Optional[Iterable] = None) -> Iterable:
     """Genera indefinidamente valores de la secuencia generalizada de Fibonacci.
     Cada valor, salvo los iniciales, es la suma de los k anteriores.
     Los valores iniciales, que deben ser k, son los valores de F(0) ... F(k-1).
@@ -313,7 +314,7 @@ def iter_mezcla(iter_1: Iterable, iter_2: Iterable) -> Iterable:
         else:
             yield elem_2
             elem_2 = next(iter_2, None)
-            
+
     while elem_1 is not None:
         yield elem_1
         elem_1 = next(iter_1, None)
@@ -338,7 +339,7 @@ def iter_mezcla_profesor(iter_1: Iterable, iter_2: Iterable) -> Iterable:
     iter_2 = iter(iter_2)
     elem_1 = next(iter_1, None)
     elem_2 = next(iter_2, None)
-    
+
     while elem_1 is not None and elem_2 is not None:
         if elem_1 <= elem_2:
             yield elem_1
