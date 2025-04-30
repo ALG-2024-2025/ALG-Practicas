@@ -7,10 +7,15 @@
 # Para cada clase o función que se pide se proporcionan algunos tests. Las implementaciones deberían superar estos tests.
 
 
+from typing import Optional, Sequence, Union
+
+
 class Hanoi:
     """Clase para representar las torres de Hanoi."""
 
-    def __init__(self, discos: int, num_postes: int = None):
+    def __init__(
+        self, discos: Union[int, Sequence[int]], num_postes: Optional[int] = None
+    ):
         """El parámetro discos es un entero o una secuencia.
         Si es un entero se refiere al número de discos en el primer poste.
         Si es una secuencia, cada elemento indica en qué poste está el disco.
@@ -121,7 +126,7 @@ class Hanoi:
             print("=" * n, sep=" ", end=" ")
         print()
 
-    def resuelve(self, destino: int = None) -> list:
+    def resuelve(self, destino: Optional[int] = None) -> list:
         """Resuelve el problema, moviendo todos los discos al poste destino,
         partiendo de cualquier configuración inicial.
         Si el argumento destino es None, el poste destino es el último.
@@ -221,6 +226,7 @@ class Hanoi:
             ):
                 auxiliar = poste
 
+        assert auxiliar is not None, "No auxiliary post found"
         self.hanoi_generalizado_profesor(tamano - 1, auxiliar)
         self.mueve(origen, destino)
         self._movimientos.append((origen, destino))
