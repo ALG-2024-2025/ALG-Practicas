@@ -9,10 +9,12 @@
 # NO se deberá utilizar el método sort de las listas de Python. Se deberán implementar los algoritmos de ordenación.
 import time
 import random
+from typing import Any, Callable
+
 
 def ordena(
     secuencia: list,
-    key_function: callable = lambda x: x,
+    key_function: Callable = lambda x: x,
     reverse: bool = False,
     tipo: str = "mergesort",
 ) -> list:
@@ -48,7 +50,7 @@ def ordena(
     return secuencia
 
 
-def mergesort(secuencia: list, key_function: callable, reverse: bool):
+def mergesort(secuencia: list, key_function: Callable, reverse: bool):
     """Ordena la secuencia dada con el algoritmo mergesort.
 
     La secuencia puede ser una lista o una tupla.
@@ -61,7 +63,7 @@ def mergesort(secuencia: list, key_function: callable, reverse: bool):
         secuencia (list): Secuencia a ordenar.
         key_function (callable): Función para obtener el valor a comparar de cada elemento.
         reverse (bool): Indica si el orden es descendente.
-    
+
     Complexity:
         O(n log n)
     """
@@ -78,7 +80,9 @@ def mergesort(secuencia: list, key_function: callable, reverse: bool):
     left_index = right_index = merged_index = 0
 
     while left_index < len(left) and right_index < len(right):
-        if (key_function(left[left_index]) <= key_function(right[right_index])) != reverse:
+        if (
+            key_function(left[left_index]) <= key_function(right[right_index])
+        ) != reverse:
             secuencia[merged_index] = left[left_index]
             left_index += 1
         else:
@@ -89,7 +93,8 @@ def mergesort(secuencia: list, key_function: callable, reverse: bool):
     # Copia los elementos restantes de la lista, si los hay
     secuencia[merged_index:] = left[left_index:] or right[right_index:]
 
-def mergesort_profesor(secuencia: list, key_function: callable, reverse: bool):
+
+def mergesort_profesor(secuencia: list, key_function: Callable, reverse: bool):
     """Ordena la secuencia dada con el algoritmo mergesort.
 
     La secuencia puede ser una lista o una tupla.
@@ -102,19 +107,22 @@ def mergesort_profesor(secuencia: list, key_function: callable, reverse: bool):
         secuencia (list): Secuencia a ordenar.
         key_function (callable): Función para obtener el valor a comparar de cada elemento.
         reverse (bool): Indica si el orden es descendente.
-    
+
     Complexity:
         O(n log n)
     """
     function = key_function
     if reverse:
+
         def function(x):
             return -key_function(x)
+
         # function = lambda x: -key_function(x)
 
     return _mergesort_profesor(secuencia, function)
 
-def _mergesort_profesor(secuencia: list, key_function: callable):
+
+def _mergesort_profesor(secuencia: list, key_function: Callable):
     """Ordena la secuencia dada con el algoritmo mergesort.
 
     La secuencia puede ser una lista o una tupla.
@@ -127,13 +135,13 @@ def _mergesort_profesor(secuencia: list, key_function: callable):
         secuencia (list): Secuencia a ordenar.
         key_function (callable): Función para obtener el valor a comparar de cada elemento.
         reverse (bool): Indica si el orden es descendente.
-    
+
     Complexity:
         O(n log n)
     """
     if len(secuencia) <= 1:
         return secuencia
-    
+
     mitad = len(secuencia) // 2
     izquierda = secuencia[:mitad]
     derecha = secuencia[mitad:]
@@ -143,7 +151,8 @@ def _mergesort_profesor(secuencia: list, key_function: callable):
 
     return _fusion_profesor(izquierda, derecha, key_function)
 
-def _fusion_profesor(izquierda: list, derecha: list, key_function: callable):
+
+def _fusion_profesor(izquierda: list, derecha: list, key_function: Callable):
     """Fusiona dos listas ordenadas en una sola lista ordenada.
 
     Args:
@@ -173,7 +182,7 @@ def _fusion_profesor(izquierda: list, derecha: list, key_function: callable):
     return res
 
 
-def quicksort(secuencia: list, key_function: callable, reverse: bool):
+def quicksort(secuencia: list, key_function: Callable, reverse: bool):
     """Ordena la secuencia dada con el algoritmo quicksort.
 
     La secuencia puede ser una lista o una tupla.
@@ -188,17 +197,21 @@ def quicksort(secuencia: list, key_function: callable, reverse: bool):
         secuencia (list): Secuencia a ordenar.
         key_function (callable): Función para obtener el valor a comparar de cada elemento.
         reverse (bool): Indica si el orden es descendente.
-    
+
     Complexity:
         Worst case: O(n^2)
         Average case: O(n log n)
     """
+
     def _insertion_sort(low, high):
         for i in range(low + 1, high + 1):
             key_item = secuencia[i]
             j = i - 1
             # Insertion sort in ascending or descending order based on reverse flag
-            while j >= low and (key_function(secuencia[j]) > key_function(key_item)) != reverse:
+            while (
+                j >= low
+                and (key_function(secuencia[j]) > key_function(key_item)) != reverse
+            ):
                 secuencia[j + 1] = secuencia[j]
                 j -= 1
             secuencia[j + 1] = key_item
@@ -213,8 +226,8 @@ def quicksort(secuencia: list, key_function: callable, reverse: bool):
         if (key_function(secuencia[mid]) > key_function(secuencia[high])) != reverse:
             secuencia[mid], secuencia[high] = secuencia[high], secuencia[mid]
         # Move median to high-1 position (standard practice)
-        secuencia[mid], secuencia[high-1] = secuencia[high-1], secuencia[mid]
-        return high-1
+        secuencia[mid], secuencia[high - 1] = secuencia[high - 1], secuencia[mid]
+        return high - 1
 
     def _partition(low, high):
         # Use median-of-three pivot selection for better performance
@@ -222,13 +235,16 @@ def quicksort(secuencia: list, key_function: callable, reverse: bool):
             pivot_idx = _median_of_three(low, high)
         else:
             pivot_idx = high
-            
+
         pivot = secuencia[pivot_idx]
-        
+
         # Swap pivot with the last element if not already there
         if pivot_idx != high:
-            secuencia[pivot_idx], secuencia[high] = secuencia[high], secuencia[pivot_idx]
-            
+            secuencia[pivot_idx], secuencia[high] = (
+                secuencia[high],
+                secuencia[pivot_idx],
+            )
+
         i = low - 1
         for j in range(low, high):
             if (key_function(secuencia[j]) <= key_function(pivot)) != reverse:
@@ -242,11 +258,11 @@ def quicksort(secuencia: list, key_function: callable, reverse: bool):
         if high - low < 10:
             _insertion_sort(low, high)
             return
-            
+
         # Only proceed if there's something to sort
         while low < high:
             p = _partition(low, high)
-            
+
             # Tail recursion optimization: handle the smaller partition recursively
             # and iterate on the larger partition
             if p - low < high - p:
@@ -260,7 +276,7 @@ def quicksort(secuencia: list, key_function: callable, reverse: bool):
         _quicksort(0, len(secuencia) - 1)
 
 
-def quicksort_profesor(secuencia: list, key_function: callable, reverse: bool):
+def quicksort_profesor(secuencia: list, key_function: Callable, reverse: bool):
     """Ordena la secuencia dada con el algoritmo quicksort.
 
     La secuencia puede ser una lista o una tupla.
@@ -275,21 +291,23 @@ def quicksort_profesor(secuencia: list, key_function: callable, reverse: bool):
         secuencia (list): Secuencia a ordenar.
         key_function (callable): Función para obtener el valor a comparar de cada elemento.
         reverse (bool): Indica si el orden es descendente.
-    
+
     Complexity:
         Worst case: O(n^2)
         Average case: O(n log n)
     """
     function = key_function
     if reverse:
+
         def function(x):
             return -key_function(x)
+
         # function = lambda x: -key_function(x)
 
     return _quicksort_profesor(secuencia, function)
 
 
-def _quicksort_profesor(secuencia: list, key_function: callable):
+def _quicksort_profesor(secuencia: list, key_function: Callable):
     """Ordena la secuencia dada con el algoritmo quicksort.
 
     La secuencia puede ser una lista o una tupla.
@@ -304,7 +322,7 @@ def _quicksort_profesor(secuencia: list, key_function: callable):
         secuencia (list): Secuencia a ordenar.
         key_function (callable): Función para obtener el valor a comparar de cada elemento.
         reverse (bool): Indica si el orden es descendente.
-    
+
     Complexity:
         Worst case: O(n^2)
         Average case: O(n log n)
@@ -315,10 +333,14 @@ def _quicksort_profesor(secuencia: list, key_function: callable):
     pivote = secuencia[0]
     izquierda, derecha = _particion_profesor(secuencia[1:], pivote, key_function)
 
-    return _quicksort_profesor(izquierda, key_function) + [pivote] + _quicksort_profesor(derecha, key_function)
+    return (
+        _quicksort_profesor(izquierda, key_function)
+        + [pivote]
+        + _quicksort_profesor(derecha, key_function)
+    )
 
 
-def _particion_profesor(secuencia: list, pivote: any, key_function: callable):
+def _particion_profesor(secuencia: list, pivote: Any, key_function: Callable):
     """Ordena la secuencia dada con el algoritmo quicksort.
 
     La secuencia puede ser una lista o una tupla.
@@ -333,7 +355,7 @@ def _particion_profesor(secuencia: list, pivote: any, key_function: callable):
         secuencia (list): Secuencia a ordenar.
         key_function (callable): Función para obtener el valor a comparar de cada elemento.
         reverse (bool): Indica si el orden es descendente.
-    
+
     Complexity:
         Worst case: O(n^2)
         Average case: O(n log n)
@@ -342,7 +364,7 @@ def _particion_profesor(secuencia: list, pivote: any, key_function: callable):
     derecha = []
 
     for elem in secuencia:
-        if (key_function(elem) <= key_function(pivote)):
+        if key_function(elem) <= key_function(pivote):
             izquierda.append(elem)
         else:
             derecha.append(elem)
@@ -356,25 +378,26 @@ def _particion_profesor(secuencia: list, pivote: any, key_function: callable):
 
 # Sugerencia: Prueba los tiempos comparando tu implementación con la del Timsort incluida en la función sorted de Python.
 
+
 def main():
     # Generar lista base de prueba
     n = 10000
     base_list = [random.randint(0, 10000) for _ in range(n)]
     test_cases = {
-        'Random': base_list,
-        'Sorted': sorted(base_list),
-        'Reverse': sorted(base_list, reverse=True)
+        "Random": base_list,
+        "Sorted": sorted(base_list),
+        "Reverse": sorted(base_list, reverse=True),
     }
-    
+
     # Diccionario de algoritmos a probar
     algorithms = {
-        'MergeSort': lambda lst: ordena(lst, tipo='mergesort'),
-        'QuickSort': lambda lst: ordena(lst, tipo='quicksort'),
-        'Timsort (Python sorted)': lambda lst: sorted(lst)
+        "MergeSort": lambda lst: ordena(lst, tipo="mergesort"),
+        "QuickSort": lambda lst: ordena(lst, tipo="quicksort"),
+        "Timsort (Python sorted)": lambda lst: sorted(lst),
     }
-    
+
     for case, data in test_cases.items():
-        print(f'\nTest case: {case}')
+        print(f"\nTest case: {case}")
         results = {}
         for name, algo in algorithms.items():
             input_data = data.copy()
@@ -382,11 +405,12 @@ def main():
             algo(input_data)
             elapsed = time.perf_counter() - start
             results[name] = elapsed
-        
+
         best_time = min(results.values())
         for name, elapsed in results.items():
             percentage = (elapsed / best_time) * 100
-            print(f'{name}: {elapsed:.6f} seconds -> {percentage:.2f}% of best')
-            
+            print(f"{name}: {elapsed:.6f} seconds -> {percentage:.2f}% of best")
+
+
 if __name__ == "__main__":
     main()
