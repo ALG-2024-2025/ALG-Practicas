@@ -2,6 +2,7 @@
 # ## Práctica 10
 # En esta práctica se resolverá el problema de los caminos mínimos entre todos los nodos de un grafo.
 # Y la multiplicación de matrices.
+import copy
 from typing import Optional, List
 
 
@@ -65,6 +66,47 @@ class CaminosMinimosFloyd:
                             self.D[i][j] = self.D[i][k] + self.D[k][j]
                             self.P[i][j] = self.P[k][j]
 
+    def __init__Profesor(self, grafo: dict):
+        """Constructor que recibe el grafo sobre el que calcular los caminos
+        mínimos.
+        El grafo que se recibe es un diccionario donde las claves son arcos
+        (pares de nodos) y los valores son el peso de los arcos.
+
+        Args:
+            grafo (dict): Grafo representado como un diccionario de arcos y pesos.
+        """
+        P = {}
+        G = {}
+        for origen, destino in grafo:
+            if origen not in P:
+                P[origen] = {}
+            if destino not in P:
+                P[destino] = {}
+            if origen not in G:
+                G[origen] = {}
+            if destino not in G:
+                G[destino] = {}
+            P[origen][destino] = 0
+            G[origen][destino] = grafo[origen, destino]
+
+        D = copy.deepcopy(G)
+        for i in D:
+            for j in D:
+                if i == j:
+                    D[i][j] = 0
+                else:
+                    D[i][j] = float("inf")
+        
+        for k in G:
+            for i in G:
+                for j in G:
+                    if D[i][j] > D[i][k] + D[k][j]:
+                        D[i][j] = D[i][k] + D[k][j]
+                        P[i][j] = k
+
+        self.D = D
+        self.P = P
+
     def distancia(self, origen: str, destino: str) -> Optional[float]:
         """Devuelve la distancia del camino mínimo ente origen y destino.
         Si no hay camino devuelve None.
@@ -86,6 +128,20 @@ class CaminosMinimosFloyd:
             return None
 
         return self.D[i][j]
+    
+    def distancia_Profesor(self, origen: str, destino: str) -> Optional[float]:
+        """Devuelve la distancia del camino mínimo ente origen y destino.
+        Si no hay camino devuelve None.
+
+        Args:
+            origen (str): Origen del camino.
+            destino (str): Destino del camino.
+
+        Returns:
+            Optional[float]: Distancia del camino mínimo o None si no hay camino.
+        """
+        d = self.D[origen][destino]
+        return d if d != float("inf") else None
 
     def camino(self, origen: str, destino: str) -> Optional[List[str]]:
         """Devuelve en una lista de nodos el camino mínimo entre origen y
@@ -123,6 +179,33 @@ class CaminosMinimosFloyd:
                 return None
 
         return camino
+    
+    def camino_Profesor(self, origen: str, destino: str) -> Optional[List[str]]:
+        """Devuelve en una lista de nodos el camino mínimo entre origen y
+        destino.
+        Si no hay camino devuelve None.
+
+        Args:
+            origen (str): Origen del camino.
+            destino (str): Destino del camino.
+
+        Returns:
+            Optional[List[str]]: Lista de nodos del camino mínimo o None si no hay camino.
+        """
+        # Si origen y destino son el mismo nodo
+        if origen == destino:
+            return [origen]
+        try:
+            k = self.P[origen][destino]
+            if k == 0:
+                return [origen, destino]
+            else:
+                subpath_izq = self.camino_Profesor(origen, k)
+                subpath_dq = self.camino_Profesor(k, destino)
+                return subpath_izq + subpath_dq[1:]
+        except KeyError:
+            # Si no hay camino, se lanza una excepción KeyError
+            return None
 
 
 def multiplicacion_encadenada_matrices(dimensiones: List[int]) -> tuple:
@@ -190,3 +273,40 @@ def multiplicacion_encadenada_matrices(dimensiones: List[int]) -> tuple:
     formula = construir_formula(1, n)
 
     return (M[1][n], formula)
+
+def multiplicacion_encadenada_matrices_Profesor(dimensiones: List[int]) -> tuple:
+    """Dadas las dimensiones de varias matrices a multiplicar, aplica el método
+    de programación dinámica para para determinar en qué orden realizar las
+    multiplicaciones.
+    El número de matrices será la longitud de dimensiones menos uno.
+    Las dimensiones de la matriz M_i están en las componentes i-1 e i de
+    'dimensiones'.
+    Devuelve el número de multiplicaciones de elementos a realizar y una
+    cadena con la fórmula, incluyendo paréntesis (solo si son necesarios), en
+    la que se realizarían las multiplicaciones.
+    Por ejemplo '(M_1*(M_2*M_3))*M_4'.
+
+    Args:
+        dimensiones (List[int]): Lista de dimensiones de las matrices a multiplicar.
+
+    Returns:
+        tuple: Número de multiplicaciones y cadena con la fórmula de multiplicación.
+    """
+    n = len(dimensiones) - 1
+    m = [[(0, f"M_{i}") for i in range(n)] for j in range(n)]
+
+    for d in range(1, n+1):
+        for i in range(n - d + 1):
+            j = i + d
+            max = float("inf")
+            mult = ""
+            for k in range(i, j):
+                candidate = m[i][k][0] + m[k + 1][j][0] + dimensiones[i] * dimensiones[k + 1] * dimensiones[j + 1]
+                if candidate < max:
+                    max = candidate
+                    left = m[i-1][k-1][1] if len(m[i-1][k-1][1]) == 3 else f"({m[i][k][1]})"
+                    right = m[k][j-1][1] if len(m[k][j-1][1]) == 3 else f"({m[k+1][j][1]})"
+                    mult = f"{left}*{right}"
+            m[i][j] = (max, mult)
+    return m[0][n-1]
+
