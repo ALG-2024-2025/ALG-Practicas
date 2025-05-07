@@ -366,8 +366,8 @@ def dijkstra(grafo: dict, inicial: str) -> dict:
         O(n^2)
     """
     # Inicializar distancias y predecesores
-    distancias = {nodo: [None, float("inf")] for nodo in grafo}
-    distancias[inicial] = [None, 0]
+    distancias = {nodo: (None, float("inf")) for nodo in grafo}
+    distancias[inicial] = (None, 0)
 
     # Conjunto de nodos no visitados
     no_visitados = set(grafo.keys())
@@ -388,7 +388,7 @@ def dijkstra(grafo: dict, inicial: str) -> dict:
             nueva_distancia = distancias[nodo_actual][1] + peso
 
             if nueva_distancia < distancias[vecino][1]:
-                distancias[vecino] = [nodo_actual, nueva_distancia]
+                distancias[vecino] = (nodo_actual, nueva_distancia)
 
     return distancias
 
