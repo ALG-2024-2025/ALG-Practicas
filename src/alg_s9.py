@@ -285,3 +285,33 @@ def mochila_optimized(objetos: list, capacidad: int) -> int:
             dp[w] = max(dp[w], dp[w - peso] + valor)
 
     return dp[capacidad]
+
+
+def mochila_optimized_profesor(objetos: list, capacidad: int) -> tuple:
+    """Dada una capacidad y una lista de pesos y valores de n elementos,
+    devuelve el valor máximo que se puede obtener sin superar la capacidad y los objetos que se deben llevar.
+
+    Los objetos no se pueden partir.
+
+    Args:
+        objetos (list): Lista de objetos, cada objeto es una tupla (peso, valor).
+        capacidad (int): Capacidad de la mochila.
+
+    Returns:
+        int: Valor máximo que se puede obtener.
+
+    Complexity:
+        O(n * capacidad)
+    """
+    dp = [(0, []) for _ in range(capacidad + 1)]
+
+    for i, (peso, valor) in enumerate(objetos):
+        for w in range(capacidad, peso - 1, -1):
+            # La segunda condición evita duplicados.
+            if (
+                dp[w - peso][0] + valor > dp[w][0]
+                and dp[w - peso][1] + [i] not in dp[w][1]
+            ):
+                dp[w] = (dp[w - peso][0] + valor, dp[w - peso][1] + [i])
+
+    return dp[capacidad]

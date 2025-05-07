@@ -28,17 +28,20 @@ class CaminosMinimosFloyd:
             nodos.add(destino)
         self.nodos = sorted(list(nodos))  # Ordenamos para tener un orden fijo
 
-        # Construir diccionario para mapear nodos a índices
-        self.nodo_a_indice = {nodo: i for i, nodo in enumerate(self.nodos)}
-        self.indice_a_nodo = {i: nodo for i, nodo in enumerate(self.nodos)}
+        # Construir diccionarios
+        self.nodo_a_indice = {}
+        self.indice_a_nodo = {}
+        for i, nodo in enumerate(self.nodos):
+            self.nodo_a_indice[nodo] = i
+            self.indice_a_nodo[i] = nodo
         n = len(self.nodos)
+
         # Inicializar matrices D y P
         INF = float("inf")
         self.D = [[INF for _ in range(n)] for _ in range(n)]  # Matriz de distancias
         self.P: List[List[Optional[int]]] = [
             [None for _ in range(n)] for _ in range(n)
         ]  # Matriz de predecesores
-        self.P = [[None for _ in range(n)] for _ in range(n)]  # Matriz de predecesores
 
         # Inicializar diagonal de D con ceros (distancia de un nodo a sí mismo)
         for i in range(n):
@@ -52,6 +55,8 @@ class CaminosMinimosFloyd:
             self.P[i][j] = i  # El predecesor de j en el camino desde i es i
 
         # Algoritmo de Floyd
+        # D es la matriz de distancias mínimas
+        # P es la matriz de predecesores
         for k in range(n):
             for i in range(n):
                 for j in range(n):
@@ -71,7 +76,7 @@ class CaminosMinimosFloyd:
         Returns:
             Optional[float]: Distancia del camino mínimo o None si no hay camino.
         """
-        if origen not in self.nodo_a_indice or destino not in self.nodo_a_indice:
+        if (origen not in self.nodo_a_indice) or (destino not in self.nodo_a_indice):
             return None
 
         i = self.nodo_a_indice[origen]
