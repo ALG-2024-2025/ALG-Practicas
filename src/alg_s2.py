@@ -17,7 +17,7 @@ from typing import Callable, Generator
 
 def generador_recurrencia(
     coeficientes: list, funcion_adicional: Callable, iniciales: list
-) -> Callable:
+):
     """Generador de valores de acuerdo a una recurrencia:
     F(n) = coeficientes[0]*F(n-1) + coeficientes[1]*F(n-2) + ...
          + funcion_adicional(n)
@@ -35,11 +35,11 @@ def generador_recurrencia(
     Returns:
         callable: Generador de valores de la recurrencia.
     """
-
+    # Se crea un iterador a partir del generador
     def generador():
         """Generador de valores de la recurrencia."""
         # Se usa un deque para almacenar solo los últimos len(coeficientes) valores.
-        ventana = deque(iniciales[-len(coeficientes) :], maxlen=len(coeficientes))
+        ventana = deque(iniciales[-len(coeficientes):], maxlen=len(coeficientes))
         # Emitir todos los valores iniciales.
         for valor in iniciales:
             yield valor
@@ -55,7 +55,7 @@ def generador_recurrencia(
             ventana.append(valor)
             indice += 1
 
-    return generador
+    return generador()
 
 
 def generador_recurrencia_profesor(
