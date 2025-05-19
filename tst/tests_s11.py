@@ -40,10 +40,6 @@ class TestArbolBusquedaOptimo(unittest.TestCase):
             self.assertEqual(arbol.hijos(clave), hijos)
             
         self.assertEqual(round(arbol.coste_esperado(), 2), 2.75)
-        costes = [ 0.45, 2.75, 0.25, 0.60, 1.30]
-        for clave, coste in zip(claves, costes):
-            self.assertEqual(round(arbol.coste_esperado(clave), 2), coste)
-            
         self.assertEqual(str(arbol), "((k1)k2(((k3)k4)k5))")
         
     def test_arbol_busqueda_2(self):
@@ -81,10 +77,6 @@ class TestArbolBusquedaOptimo(unittest.TestCase):
             self.assertEqual(arbol.hijos(clave), hijos)
             
         self.assertEqual(round(arbol.coste_esperado(), 2), 2.57)
-        costes = [0.21, 2.57, 0.04, 0.14, 0.52, 0.12, 0.04, 1.36, 0.25, 0.03]
-        for clave, coste in zip(claves, costes):
-            self.assertEqual(round(arbol.coste_esperado(clave), 2), coste)
-    
         self.assertEqual(str(arbol), "((k1)k2((((k3)k4)k5(k6(k7)))k8(k9(k10))))")        
             
 

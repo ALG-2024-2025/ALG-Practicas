@@ -19,10 +19,14 @@ class ArbolBusquedaOptimo:
         """
         Constructor a partir de una secuencia con las claves, sus probabilidades
         y las probabilidades de buscar elementos que no están.
-        La longitud de claves y probab_claves tiene que ser la misma.
-        Si probab_pseudo es None no se tienen en cuentas las búsquedas de
-        elementos que no están.
-        Si prabab_pseudo no es None, su longitud debe ser la de claves más 1.
+        
+        Args:
+            claves (list): Claves del árbol.
+            probab_claves (list): Probabilidades de búsqueda de las claves.
+            probab_pseudo (Optional[list], optional): Probabilidades de las pseudoclaves. Defaults to None.
+        Raises:
+            ValueError: Si la longitud de claves y probab_claves no es la misma.
+            ValueError: Si la longitud de probab_pseudo no es len(claves) + 1.
         """
         if len(claves) != len(probab_claves):
             raise ValueError("La longitud de claves y probab_claves debe ser la misma")
@@ -69,10 +73,13 @@ class ArbolBusquedaOptimo:
             # Calcular costes esperados
             self._calcular_costes()
 
-    def _construir_arbol_optimo(self):
+    def _construir_arbol_optimo(self) -> None:
         """
         Construye el árbol de búsqueda óptimo utilizando programación dinámica.
         Esta implementación sigue el algoritmo de Knuth para árboles de búsqueda óptimos.
+        
+        Returns:
+            None
         """
         n = len(self.claves)
         
@@ -99,16 +106,19 @@ class ArbolBusquedaOptimo:
                     if t < self.c[i][j]:
                         self.c[i][j] = t
                         self.r[i][j] = k
-                        
+        
         # Construir la estructura del árbol
         self._construir_estructura(1, n)
-        
-        # Calcular los costes específicos para cada clave según los valores esperados en los tests
-        self._ajustar_costes_para_test()
 
-    def _construir_estructura(self, i, j):
+    def _construir_estructura(self, i: int, j: int) -> Optional[str]:
         """
-        Construye recursivamente la estructura del árbol a partir de la matriz r
+        Construye recursivamente la estructura del árbol a partir de la matriz r.
+        
+        Args:
+            i (int): Índice inicial de claves.
+            j (int): Índice final de claves.
+        Returns:
+            Optional[str]: Clave de la raíz del subárbol construido.
         """
         if i > j:
             return None
@@ -127,9 +137,15 @@ class ArbolBusquedaOptimo:
         
         return clave
     
-    def _calcular_profundidades(self, clave, nivel):
+    def _calcular_profundidades(self, clave: Optional[str], nivel: int) -> None:
         """
-        Calcula la profundidad de cada nodo en el árbol
+        Calcula la profundidad de cada nodo en el árbol.
+        
+        Args:
+            clave (Optional[str]): Clave del nodo actual.
+            nivel (int): Nivel de profundidad actual.
+        Returns:
+            None
         """
         if clave is None:
             return
@@ -142,9 +158,12 @@ class ArbolBusquedaOptimo:
             self._calcular_profundidades(izq, nivel + 1)
             self._calcular_profundidades(der, nivel + 1)
     
-    def _calcular_costes(self):
+    def _calcular_costes(self) -> None:
         """
-        Calcula los costes esperados para cada subárbol
+        Calcula los costes esperados para cada subárbol.
+        
+        Returns:
+            None
         """
         n = len(self.claves)
         
@@ -159,60 +178,53 @@ class ArbolBusquedaOptimo:
                         self.costes[clave] = self.c[i][j]
                         break
 
-    def _ajustar_costes_para_test(self):
+    def __len__(self) -> int:
         """
-        Ajusta los costes esperados para que coincidan con los valores esperados en los tests.
-        Este método usa valores "hardcodeados" basados en los casos de prueba.
-        """
-        # Caso especial para el test_arbol_busqueda_1
-        if len(self.claves) == 5 and self.claves[0] == "k1" and self.claves[1] == "k2":
-            # Costes esperados del primer test
-            self.costes_totales = {
-                "k1": 0.45,
-                "k2": 2.75,  # Este es el coste total del árbol
-                "k3": 0.25,
-                "k4": 0.60,
-                "k5": 1.30
-            }
-            # Asignar valor total esperado
-            self.c[1][len(self.claves)] = 2.75
+        Número de claves en el árbol.
         
-        # Caso especial para el test_arbol_busqueda_2
-        elif len(self.claves) == 10 and self.claves[0] == "k1" and self.claves[1] == "k2":
-            # Costes esperados del segundo test
-            self.costes_totales = {
-                "k1": 0.21,
-                "k2": 2.57,  # Este es el coste total del árbol
-                "k3": 0.04,
-                "k4": 0.14,
-                "k5": 0.52,
-                "k6": 0.12,
-                "k7": 0.04,
-                "k8": 1.36,
-                "k9": 0.25,
-                "k10": 0.03
-            }
-            # Asignar valor total esperado
-            self.c[1][len(self.claves)] = 2.57
-    
-    def __len__(self):
-        """Número de claves en el árbol."""
+        Returns:
+            int: Número de claves.
+        """
         return len(self.claves)
 
     def __iter__(self):
-        """Iterador sobre las claves del árbol."""
+        """
+        Iterador sobre las claves del árbol.
+        
+        Returns:
+            Iterator: Iterador de claves.
+        """
         return iter(self.claves)
 
-    def __contains__(self, clave):
-        """Indica si una clave está en el árbol."""
+    def __contains__(self, clave: str) -> bool:
+        """
+        Indica si una clave está en el árbol.
+        
+        Args:
+            clave (str): Clave a comprobar.
+        Returns:
+            bool: True si la clave está en el árbol, False en caso contrario.
+        """
         return clave in self.claves
 
-    def __getitem__(self, i):
-        """Devuelve la clave i-ésima."""
+    def __getitem__(self, i: int) -> str:
+        """
+        Devuelve la clave i-ésima.
+        
+        Args:
+            i (int): Índice de la clave.
+        Returns:
+            str: Clave correspondiente al índice.
+        """
         return self.claves[i]
 
-    def raiz(self):
-        """Devuelve la clave de la raíz del árbol."""
+    def raiz(self) -> Optional[str]:
+        """
+        Devuelve la clave de la raíz del árbol.
+        
+        Returns:
+            Optional[str]: Clave de la raíz o None si el árbol está vacío.
+        """
         n = len(self.claves)
         if n == 0:
             return None
@@ -220,42 +232,49 @@ class ArbolBusquedaOptimo:
         idx = self.r[1][n]
         return self.claves[idx-1] if idx > 0 else None
 
-    def profundidad(self, clave=None):
+    def profundidad(self, clave: Optional[str] = None) -> Optional[int]:
         """
         Devuelve la profundidad del árbol si clave es None, si no devuelve la
-        profundidad de la clave.
-        Si la clave no está devuelve None.
+        profundidad de la clave. Si la clave no está devuelve None.
+        
+        Args:
+            clave (Optional[str], optional): Clave a consultar. Defaults to None.
+        Returns:
+            Optional[int]: Profundidad del árbol o de la clave.
         """
         if clave is None:
             return max(self.prof.values()) if self.prof else 0
         
         return self.prof.get(clave, None)
 
-    def hijos(self, clave=None):
+    def hijos(self, clave: Optional[str] = None) -> tuple:
         """
         Devuelve un par con las claves del hijo izquierdo y derecho.
         Si el argumento clave es None devuelve los hijos de la raíz.
         En el resultado, None indica que no tiene ese hijo.
+        
+        Args:
+            clave (Optional[str], optional): Clave a consultar. Defaults to None.
+        Returns:
+            tuple: (hijo_izquierdo, hijo_derecho)
         """
         if clave is None:
             clave = self.raiz()
         
         return self.estructura.get(clave, (None, None))
 
-    def coste_esperado(self, clave=None):
+    def coste_esperado(self, clave: Optional[str] = None) -> float:
         """
         Devuelve el coste esperado de la búsqueda en el subárbol asociado a una
-        clave.
-        Si clave es None devuelve el coste del árbol completo.
+        clave. Si clave es None devuelve el coste del árbol completo.
+        
+        Args:
+            clave (Optional[str], optional): Clave a consultar. Defaults to None.
+        Returns:
+            float: Coste esperado del subárbol o del árbol completo.
         """
         n = len(self.claves)
         
-        # Para casos de prueba específicos, usar los valores preestablecidos
-        if hasattr(self, 'costes_totales'):
-            if clave is None:
-                return self.c[1][n] if n > 0 else 0
-            return self.costes_totales.get(clave, 0)
-            
         # Para otros casos, usar el cálculo estándar
         if clave is None:
             return self.c[1][n] if n > 0 else 0
@@ -271,9 +290,12 @@ class ArbolBusquedaOptimo:
                 self.probab_pseudo[idx-1] + 
                 self.probab_pseudo[idx])
 
-    def __str__(self):
+    def __str__(self) -> str:
         """
         Devuelve una cadena con una representación del árbol.
+        
+        Returns:
+            str: Representación del árbol.
         """
         def _str_rec(clave):
             if clave is None:
